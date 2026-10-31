@@ -137,8 +137,10 @@ fn display_origin(origin: &str) -> String {
     match origin.strip_prefix("file:") {
         Some(path) => {
             let path = Path::new(path);
-            // Repo-local origins like `.git/config` are relative to the cwd
-            let path = if path.is_relative() {
+            // Repo-local origins like `.git/config` are relative to the cwd.
+            // Check for a root rather than is_relative(): on Windows a
+            // drive-less path like `/etc/gitconfig` is "relative" but rooted.
+            let path = if !path.has_root() {
                 std::env::current_dir()
                     .map(|cwd| cwd.join(path))
                     .unwrap_or_else(|_| path.to_path_buf())
@@ -203,6 +205,13 @@ mod tests {
         let setting = parse_config_z("file:/etc/gitconfig\0alan@example.com\0").unwrap();
         assert_eq!(setting.value, "alan@example.com");
         assert_eq!(setting.origin, "/etc/gitconfig");
+    }
+
+    #[test]
+    fn resolves_repo_local_origin_against_cwd() {
+        let setting = parse_config_z("file:.git/config\0x\0").unwrap();
+        let expected = display_path(&std::env::current_dir().unwrap().join(".git/config"));
+        assert_eq!(setting.origin, expected);
     }
 
     #[test]
