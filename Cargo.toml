@@ -1,0 +1,26 @@
+[package]
+name = "git-whoami-cli"
+version = "0.1.0"
+edition = "2024"
+rust-version = "1.99.1"
+description = "Verify which Git identity (and git-persona persona) is active"
+license = "MIT"
+repository = "https://github.com/uRadical/git-whoami"
+keywords = ["git", "cli", "identity", "persona"]
+categories = ["command-line-utilities", "development-tools"]
+exclude = [".github/", "RELEASING.md", "rust-toolchain.toml"]
+
+[[bin]]
+name = "git-whoami"
+path = "src/main.rs"
+
+[dependencies]
+clap = { version = "4", features = ["derive"] }
+serde = { version = "1", features = ["derive"] }
+serde_json = "1"
+colored = "2"
+dirs = "5"
+anyhow = "1"
+
+[dev-dependencies]
+tempfile = "3"
