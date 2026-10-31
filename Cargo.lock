@@ -186,7 +186,7 @@ dependencies = [
 ]
 
 [[package]]
-name = "git-whoami-cli"
+name = "git-whoami"
 version = "0.1.0"
 dependencies = [
  "anyhow",
