@@ -9,13 +9,28 @@ Releases are cut by pushing a version tag on `main`. The `Release` workflow then
 
 ## One-time setup
 
-Create a crates.io API token with the `publish-new` and `publish-update` scopes at
-<https://crates.io/settings/tokens> and add it to the repository as the
-`CARGO_REGISTRY_TOKEN` secret:
+The first release must be published with an API token, because crates.io only
+allows trusted publishing for a crate that already exists.
 
-```bash
-gh secret set CARGO_REGISTRY_TOKEN
-```
+1. Create a crates.io API token at <https://crates.io/settings/tokens> with the
+   `publish-new` and `publish-update` scopes (restricted to `git-whoami`), and add
+   it to the repository as the `CARGO_REGISTRY_TOKEN` secret:
+
+   ```bash
+   gh secret set CARGO_REGISTRY_TOKEN
+   ```
+
+2. After the first release is on crates.io, switch to trusted publishing: on
+   crates.io go to the crate's **Settings → Trusted Publishing → Add → GitHub** and enter
+   - Repository owner: `uRadical`
+   - Repository name: `git-whoami`
+   - Workflow filename: `release.yml`
+   - Environment: leave empty
+
+3. Delete the `CARGO_REGISTRY_TOKEN` secret and revoke the token on crates.io.
+
+The publish job tries trusted publishing first and falls back to the secret, so
+the workflow needs no changes for the switch.
 
 Optionally add `CODECOV_TOKEN` for coverage uploads.
 
